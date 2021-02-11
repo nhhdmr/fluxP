@@ -1,0 +1,13 @@
+longueur_largeur:
+50,30
+Sortie:
+0,6
+0,5
+0,4
+Obstacle:
+5,5;8,4
+Incendie:
+10,10
+Foule:
+8,2
+10,6
