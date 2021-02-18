@@ -42,26 +42,27 @@ def lire_txt(filepath):
     print(len(foule))
     return [length_width, sortie, obstacle, incendie, foule]
 
+
 # Déterminer la direction du mouvement des piétons 1-8
 # 0 s'il reste en place
-def direction(pt_or,pt_des):
-    x = pt_des[0]-pt_or[0]
-    y = pt_des[1]-pt_or[1]
-    if (x,y)==(1,-1):
+def direction(pt_or, pt_des):
+    x = pt_des[0] - pt_or[0]
+    y = pt_des[1] - pt_or[1]
+    if (x, y) == (1, -1):
         return 1
-    elif (x, y) == (1,0):
+    elif (x, y) == (1, 0):
         return 2
-    elif (x,y)==(1,1):
+    elif (x, y) == (1, 1):
         return 3
-    elif (x,y)==(0,1):
+    elif (x, y) == (0, 1):
         return 4
-    elif (x,y)==(-1,1):
+    elif (x, y) == (-1, 1):
         return 5
-    elif (x,y)==(-1,0):
+    elif (x, y) == (-1, 0):
         return 6
-    elif (x,y)==(-1,-1):
+    elif (x, y) == (-1, -1):
         return 7
-    elif (x,y)==(0,-1):
+    elif (x, y) == (0, -1):
         return 8
     else:
         return 0
@@ -108,10 +109,12 @@ def pr(g):
     res = (1 - pow(e, -g * v)) / (1 + pow(e, -g * v))
     return res
 
+
 # La formule de calcul du frottement
 def pf(g):
     l = 0.5
     return l * pr(g)
+
 
 # La formule de calcul de la répulsion du feu
 def pfire(point, sortie, incendie):

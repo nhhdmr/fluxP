@@ -17,6 +17,8 @@ class Person:
         self.position = (x, y)
         self.speed = Person.normal_speed
         self.stat = False
+        self.pos_pass = []
+        self.rest = 0
 
     # retourner string pour gérer les piètons sur la visualisation
     def name(self):
@@ -60,7 +62,7 @@ class Foule():
 
     # Déterminez si un point se trouve dans une zone.
     def point_in_zone(self, point):
-        if 0 < point[0] < self.map.length - 1 and 0 < point[1] < self.map.width - 1:
+        if 0 <= point[0] <= self.map.length - 1 and 0 <= point[1] <= self.map.width - 1:
             return True
         else:
             return False
@@ -77,15 +79,18 @@ class Foule():
         list_voisin.append((person.position[0] - 1, person.position[1] - 1))
         list_voisin.append((person.position[0], person.position[1] - 1))
 
+        res = []
+        #i = 1
         for voisin in list_voisin:
-            if not self.point_in_zone(voisin):
-                list_voisin.remove(voisin)
-            else:
-                if self.point_obstacle(voisin) or self.point_stat(voisin):
-                    list_voisin.remove(voisin)
-            '''if self.point_stat(voisin):
-                list_voisin.remove(voisin)'''
-        return list_voisin
+            #print(i)
+            if self.point_in_zone(voisin) and not self.point_obstacle(voisin) and not self.point_stat(voisin):
+                res.append(voisin)
+                # list_voisin.remove(voisin)
+            #print(res)
+            #i += 1
+        #print(res)
+        return res
+
 
     # Déterminer si un point est occupé
     def point_stat(self, point):
@@ -126,14 +131,14 @@ class Foule():
     # Calculez l'intensité du mouvement des cellules voisin et sélectionnez la prochaine position de déplacement.
     def calcul(self):
         u1 = 10
-        '''u2 = 0.001
+        u2 = 0.001
         u3 = -0.1
         u4 = -0.1
-        u5 = -0.3'''
-        u2 = 0
+        u5 = -0.3
+        '''u2 = 0
         u3 = 0
         u4 = 0
-        u5 = 0
+        u5 = 0'''
         list_result = []
         for person in self.list_person:
             list_voisin = self.voisins(person)
@@ -163,7 +168,7 @@ class Foule():
                     p_max = p_total
                     position_next = voisin
                 # elif math.fabs(p_total - p_max) == 0:
-                elif p_total - p_max == 0:
+                elif p_max - p_total < 0.0001:
                     d1_x = voisin[0] - person.position[0]
                     d1_y = voisin[1] - person.position[1]
                     distance1 = math.sqrt(d1_x ** 2 + d1_y ** 2)
@@ -179,11 +184,17 @@ class Foule():
     # Mettre à jour les positions des piétons
     def maj(self):
         # Détecter si le piéton a atteint la sortie et mettre à jour la valeur de heat map
+        tmp = []
         for person in self.list_person:
+            if person.position not in person.pos_pass:
+                person.pos_pass.append(person.position)
             self.addMapValue(self.thmap, person.position[0], person.position[1])
             if person.position in self.map.sorties:
                 person.stat = True
-                self.list_person.remove(person)
+                #self.list_person.remove(person)
+            else:
+                tmp.append(person)
+        self.list_person = tmp
 
         # Classement des piétons selon la même cible mobile suivante
         list_calcul = self.calcul()
@@ -192,47 +203,92 @@ class Foule():
         for i, v in enumerate(list_calcul):
             d[v[1]].append(v[0])
             if v[1] not in list_pt:
-                list_pt.append(v[1])
+                if v[1] != ():
+                    #print(v[1])
+                    list_pt.append(v[1])
+        #print('list_pt:')
+        #print(list_pt)
         self.list_move_pc = []
 
         # Résolution de conflit
         for pt in list_pt:
-            # sans conflit si seul point
-            if len(d[pt]) == 1:
-                dir = fon.direction(d[pt][0].position, pt)
-                self.list_move_pc.append((d[pt][0].position, dir))
-                d[pt][0].position = pt
-                '''sor = fon.proche_sortie(d[pt][0].position,self.map.sorties)
-                d1_x = sor[0] - d[pt][0].position[0]
-                d1_y = sor[1] - d[pt][0].position[1]
-                distance1 = math.sqrt(d1_x ** 2 + d1_y ** 2)
-                d2_x = sor[0] - pt[0]
-                d2_y = sor[1] - pt[1]
-                distance2 = math.sqrt(d2_x ** 2 + d2_y ** 2)
-                if distance1 > distance2:
-                    dir = fon.direction(d[pt][0].position, pt)
-                    self.list_move_pc.append((d[pt][0].position, dir))
-                    d[pt][0].position = pt'''
-            # Si plusieurs piétons ont la même position suivante,
-            # l'un est sélectionné au hasard pour se déplacer et
-            # les autres piétons ne bougent pas.
-            else:
+            '''choice = 0
+            if len(d[pt]) > 1 and pt != ():
                 num = len(d[pt])
                 choice = random.randint(0, num - 1)
-                dir = fon.direction(d[pt][choice].position, pt)
-                self.list_move_pc.append((d[pt][choice].position, dir))
-                d[pt][choice].position = pt
-                '''sor = fon.proche_sortie(d[pt][choice].position, self.map.sorties)
+
+            if (len(d[pt]) == 1) or (len(d[pt]) > 1 and pt != ()):
+                sor = fon.proche_sortie(d[pt][choice].position, self.map.sorties)
                 d1_x = sor[0] - d[pt][choice].position[0]
                 d1_y = sor[1] - d[pt][choice].position[1]
                 distance1 = math.sqrt(d1_x ** 2 + d1_y ** 2)
                 d2_x = sor[0] - pt[0]
                 d2_y = sor[1] - pt[1]
                 distance2 = math.sqrt(d2_x ** 2 + d2_y ** 2)
-                if distance1 > distance2:
+                if distance1 >= distance2 or d[pt][choice].rest > 5:
                     dir = fon.direction(d[pt][choice].position, pt)
                     self.list_move_pc.append((d[pt][choice].position, dir))
-                    d[pt][choice].position = pt'''
+                    d[pt][choice].position = pt
+                else:
+                    d[pt][choice].rest += 1
+        return self'''
+            #sans conflit si seul point'''
+            if len(d[pt]) == 1:
+                #print(d[pt][0].position)
+                #print(pt)
+                #if d[pt][0].position not in d[pt][0].pos_pass:
+                #print('pos_pass')
+                #print(d[pt][0].pos_pass)
+                #dir = fon.direction(d[pt][0].position, pt)
+                #self.list_move_pc.append((d[pt][0].position, dir))
+                #d[pt][0].pos_pass.append(d[pt][0].position)
+                #d[pt][0].position = pt
+
+                sor = fon.proche_sortie(d[pt][0].position,self.map.sorties)
+                d1_x = sor[0] - d[pt][0].position[0]
+                d1_y = sor[1] - d[pt][0].position[1]
+                distance1 = math.sqrt(d1_x ** 2 + d1_y ** 2)
+                d2_x = sor[0] - pt[0]
+                d2_y = sor[1] - pt[1]
+                distance2 = math.sqrt(d2_x ** 2 + d2_y ** 2)
+                if distance1 > distance2 or d[pt][0].rest > 5:
+                    dir = fon.direction(d[pt][0].position, pt)
+                    self.list_move_pc.append((d[pt][0].position, dir))
+                    d[pt][0].position = pt
+                    d[pt][0].rest = 0
+                else:
+                    d[pt][0].rest += 1
+            # Si plusieurs piétons ont la même position suivante,
+            # l'un est sélectionné au hasard pour se déplacer et
+            # les autres piétons ne bougent pas.
+            # else:
+            elif len(d[pt]) > 1 and pt != ():
+                num = len(d[pt])
+                choice = random.randint(0, num - 1)
+                #print('choise')
+                #print(choice)
+                #print(d[pt][choice].position)
+                #print(pt)
+                #if d[pt][choice].position not in d[pt][choice].pos_pass:
+                #print('pos_pass')
+                #print(d[pt][choice].pos_pass)
+                #dir = fon.direction(d[pt][choice].position, pt)
+                #self.list_move_pc.append((d[pt][choice].position, dir))
+                #d[pt][choice].position = pt
+
+                sor = fon.proche_sortie(d[pt][choice].position, self.map.sorties)
+                d1_x = sor[0] - d[pt][choice].position[0]
+                d1_y = sor[1] - d[pt][choice].position[1]
+                distance1 = math.sqrt(d1_x ** 2 + d1_y ** 2)
+                d2_x = sor[0] - pt[0]
+                d2_y = sor[1] - pt[1]
+                distance2 = math.sqrt(d2_x ** 2 + d2_y ** 2)
+                if distance1 >= distance2 or d[pt][choice].rest > 5:
+                    dir = fon.direction(d[pt][choice].position, pt)
+                    self.list_move_pc.append((d[pt][choice].position, dir))
+                    d[pt][choice].position = pt
+                else:
+                    d[pt][choice].rest += 1
         #print(self.list_person[0].position)
         return self
 

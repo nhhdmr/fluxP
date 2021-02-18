@@ -26,7 +26,7 @@ class map:
             self.list_obstacle.append((i,0))
             self.list_obstacle.append((i,l_w[1]-1))
 
-        for i in range(0,self.width):
+        for i in range(1,self.width-1):
             self.list_obstacle.append((0,i))
             self.list_obstacle.append((l_w[0]-1,i))
 

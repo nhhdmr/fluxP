@@ -148,8 +148,8 @@ class GUI:
     def show_people(self, foule):
         for per in foule.list_person:
             ox, oy = per.position[0], per.position[1]
-            x1, y1 = ox - 0.5, oy - 0.5
-            x2, y2 = ox + 0.5, oy + 0.5
+            x1, y1 = ox - 0.2, oy - 0.2
+            x2, y2 = ox + 0.2, oy + 0.2
             [x1, y1, x2, y2] = map(lambda x: x * GUI.Pic_Ratio, [x1, y1, x2, y2])
             self.canvas.create_oval(x1, y1, x2, y2, fill="black", outline="black", tag=per.name())
 
@@ -174,11 +174,15 @@ class GUI:
         self.set_sortie(self.foule)
         self.set_obstacle(self.foule)
         self.show_people(self.foule)
+        if len(self.foule.map.list_obstacle) < 15:
+            print(self.foule.map.list_obstacle)
         i = 0
         while len(self.foule.list_person) != 0:
             if self.etat:
                 self.foule = self.foule.maj()
                 self.update_people(self.foule)
+                '''for per in self.foule.list_person:
+                    print(per.position)'''
                 #time.sleep(random.uniform(0.15, 0.25))
                 self.canvas.update()
                 self.window.update()
@@ -189,7 +193,7 @@ class GUI:
             '''for p in self.foule.list_person:
                 print(p.position)'''
             i += 1
-            # print(i)
+            #print(i)
         # Calculer le temps de simulation
         time_pass = time.time() - time_start
         print("time:")
