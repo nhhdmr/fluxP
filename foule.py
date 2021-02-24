@@ -150,7 +150,9 @@ class Foule():
                 pf = fon.pf(gamma)
                 # pfire = 0
                 sor = fon.proche_sortie(voisin,self.map.sorties)
-                pfire = fon.pfire(voisin,sor,self.map.incendies[0])
+                pfire = 0
+                if len(self.map.incendies)>0 :
+                    pfire = fon.pfire(voisin,sor,self.map.incendies[0])
                 # Calculer l'intensité totale du mouvement
                 p_total = u1 * pd + u2 * pc + u3 * pr + u4 * pf + u5 * pfire
                 if p_total > p_max:
