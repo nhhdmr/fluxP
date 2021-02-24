@@ -75,7 +75,9 @@ def proche_sortie(point, list_sortie):
     for sortie in list_sortie:
         d_x = sortie[0] - point[0]
         d_y = sortie[1] - point[1]
+        # calculer la distance entre le point et la sortie
         distance = math.sqrt(d_x ** 2 + d_y ** 2)
+        # conserver la distance plus petit
         if distance < tmp:
             tmp = distance
             sor = sortie
@@ -86,6 +88,7 @@ def proche_sortie(point, list_sortie):
 def pd(point, sortie):
     vector1 = np.array([point[0], point[1]])
     vector2 = np.array([sortie[0], sortie[1]])
+    # calculer la distance entre le point et la sortie
     op = np.linalg.norm(vector1 - vector2)
     if op == 0:
         res = 9999
@@ -105,6 +108,8 @@ def pc(m, n):
 # La formule pour calculer la force répulsive entre les personnes et les obstacles
 def pr(g):
     e = math.e
+    # v : la vitesse
+    # g: gamma -> Coefficient de dureté de répulsion
     v = 1.0
     res = (1 - pow(e, -g * v)) / (1 + pow(e, -g * v))
     return res
@@ -112,6 +117,7 @@ def pr(g):
 
 # La formule de calcul du frottement
 def pf(g):
+    # l: lambda -> Coefficient de friction
     l = 0.5
     return l * pr(g)
 
@@ -121,6 +127,8 @@ def pfire(point, sortie, incendie):
     vector1 = np.array([sortie[0], sortie[1]])
     vector2 = np.array([incendie[0], incendie[1]])
     vector3 = np.array([point[0], point[1]])
+    # la distance entre sortie et incendie
     op1 = np.linalg.norm(vector1 - vector2)
+    # la distance entre point et incendie
     op2 = np.linalg.norm(vector3 - vector2)
     return 1 - op2 / op1

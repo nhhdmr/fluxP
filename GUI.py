@@ -1,18 +1,10 @@
-import random
 import time
-from signal import pause
-import signal
 from tkinter import *
 import tkinter.filedialog
 import seaborn as sns
 import matplotlib.pyplot as plt
 import fonction
 import foule
-from foule import Foule
-import threading
-import os
-import psutil
-from multiprocessing import Process, Lock
 
 
 # La classe GUI
@@ -23,7 +15,6 @@ class GUI:
     # Constructeur
     def __init__(self):
         self.pid = None
-        self.lock = Lock()
         self.foule = None
         self.etat = True
 
@@ -45,8 +36,8 @@ class GUI:
         self.button_suspendre = Button(self.window, text='Suspendre', command=self.pause)
         self.button_suspendre.place(x=125, y=450)
         # Le button pour continuer l'animation
-        self.button_continuer = Button(self.window,text="Continuer",command = self.resume)
-        self.button_continuer.place(x=220,y=450)
+        self.button_continuer = Button(self.window, text="Continuer", command=self.resume)
+        self.button_continuer.place(x=220, y=450)
         # Le button pour arreter l'animation
         self.button_arreter = Button(self.window, text='Arrêter', command=self.stop)
         self.button_arreter.place(x=320, y=450)
@@ -63,11 +54,11 @@ class GUI:
 
     # importer un fichier pour initialiser la simulation
     def upload(self):
-        selectFileName = tkinter.filedialog.askopenfilename(title='Choisir un fichier', filetypes=[('TXT', '*.txt')],
-                                                            initialdir='/Users/mr/Desktop')
-        if selectFileName != '':
-            self.txt_nom.set(selectFileName)
-        # return selectFileName
+        select_file_name = tkinter.filedialog.askopenfilename(title='Choisir un fichier', filetypes=[('TXT', '*.txt')],
+                                                              initialdir='/Users/mr/Desktop/test')
+        if select_file_name != '':
+            self.txt_nom.set(select_file_name)
+        # return select_file_name
 
     # La fonction pour annuler l'initialisation
     def annuler(self):
@@ -80,7 +71,7 @@ class GUI:
         window_ini1.geometry('300x200')
         window_ini1.title('choisir un modèle')
 
-        #Bouton radio
+        # Bouton radio
         r1 = Radiobutton(window_ini1, text='Automates Cellulaires', variable=self.model, value='AC')
         r1.place(x=50, y=50)
         r2 = Radiobutton(window_ini1, text='Modèle de force sociale', variable=self.model, value='MFS')
@@ -138,6 +129,14 @@ class GUI:
             [sx, sy, ex, ey] = map(lambda x: x * GUI.Pic_Ratio, [sx, sy, ex, ey])
             self.canvas.create_rectangle(sx, sy, ex, ey, fill="green", outline="green")
 
+    # Dessiner des pts incendies
+    def set_incendie(self, foule):
+        for (x, y) in foule.map.incendies:
+            sx, sy = x - 1, y - 1
+            ex, ey = x + 1, y + 1
+            [sx, sy, ex, ey] = map(lambda x: x * GUI.Pic_Ratio, [sx, sy, ex, ey])
+            self.canvas.create_rectangle(sx, sy, ex, ey, fill="pink", outline="pink")
+
     # Mettre à jour la position des piétons sur le graphique
     def update_people(self, foule):
         for p in foule.list_person:
@@ -148,8 +147,8 @@ class GUI:
     def show_people(self, foule):
         for per in foule.list_person:
             ox, oy = per.position[0], per.position[1]
-            x1, y1 = ox - 0.2, oy - 0.2
-            x2, y2 = ox + 0.2, oy + 0.2
+            x1, y1 = ox - 0.5, oy - 0.5
+            x2, y2 = ox + 0.5, oy + 0.5
             [x1, y1, x2, y2] = map(lambda x: x * GUI.Pic_Ratio, [x1, y1, x2, y2])
             self.canvas.create_oval(x1, y1, x2, y2, fill="black", outline="black", tag=per.name())
 
@@ -163,63 +162,49 @@ class GUI:
         length_width, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
         print(self.txt_nom.get())
         self.foule = foule.Foule(people, length_width, sorties, obstacles, incendies)
-        #time_start = time.time()
         self.set_sortie(self.foule)
         self.set_obstacle(self.foule)
+        self.set_incendie(self.foule)
         self.show_people(self.foule)
 
     # Lancer l'animation de simulation
     def run(self):
+        # calculer le temps de simulation
         time_start = time.time()
         self.set_sortie(self.foule)
         self.set_obstacle(self.foule)
         self.show_people(self.foule)
-        if len(self.foule.map.list_obstacle) < 15:
-            print(self.foule.map.list_obstacle)
+
+        # MAJ la visualisation
         i = 0
         while len(self.foule.list_person) != 0:
             if self.etat:
                 self.foule = self.foule.maj()
                 self.update_people(self.foule)
-                '''for per in self.foule.list_person:
-                    print(per.position)'''
-                #time.sleep(random.uniform(0.15, 0.25))
+                # time.sleep(random.uniform(0.15, 0.25))
                 self.canvas.update()
                 self.window.update()
             else:
-                #time.sleep(random.uniform(0.15, 0.25))
+                # time.sleep(random.uniform(0.15, 0.25))
                 self.canvas.update()
                 self.window.update()
-            '''for p in self.foule.list_person:
-                print(p.position)'''
             i += 1
-            #print(i)
+            # print(i)
         # Calculer le temps de simulation
         time_pass = time.time() - time_start
         print("time:")
         print(time_pass)
-        #Dessiner heat map
+        # Dessiner heat map
         sns.heatmap(self.foule.thmap.T, cmap="Reds")
         plt.axis('equal')
         plt.show()
 
-    '''def proc(self):
-        new_process = Process(target=self.run())
-        self.pid = new_process.pid'''
-
     # Mettre la simulation en pause
     def pause(self):
-        # os.system("pause")
-        # self.lock.acquire()
-        # p = psutil.Process(self.pid)
-        # p.suspend()
         self.etat = False
 
     # Reprendre la simulation
     def resume(self):
-        # self.lock.release()
-        # p = psutil.Process(self.pid)
-        # p.resume()
         self.etat = True
 
     # Arreter la simulation
