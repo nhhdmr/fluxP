@@ -13,9 +13,10 @@ def range_obstacle(A, B):
 # La classe Map
 class map:
     #Constructeur
-    def __init__(self, l_w, sorties, obstacles, incendies):
+    def __init__(self, l_w, wall, sorties, obstacles, incendies):
         self.length = l_w[0]
         self.width = l_w[1]
+        self.wall = wall
         self.sorties = sorties
         self.incendies = incendies
         self.zone_obstacale = []

@@ -26,17 +26,17 @@ class Person:
 
 
 # La classe Foule
-class Foule():
+class Foule:
     # la fonction de construction
-    def __init__(self, coords_person, l_w, sorties, obstacles, incendies):
-        self.map = map.map(l_w, sorties, obstacles, incendies)
+    def __init__(self, coords_person, l_w, wall, sorties, obstacles, incendies):
+        self.map = map.map(l_w, wall, sorties, obstacles, incendies)
         self.list_person = []
         self.list_move_pc = []
         # initialiser la liste de foule
         i = 0
         for coord in coords_person:
             i += 1
-            self.list_person.append(Person(i, coord[0], coord[1]))
+            self.list_person.append(Person(i, int(coord[0]), int(coord[1])))
         # pour stocker les donnees de heat map
         self.thmap = np.zeros(((l_w[0] + 2), (l_w[1] + 2)))
         # stocker les resultats pour Pd
@@ -125,11 +125,16 @@ class Foule():
         # u3: coefficient de répulsion entre foule et obstacle
         # u4: coefficient de friction
         # u5: Coefficient de répulsion du feu
-        u1 = 10
-        u2 = 0.001
+        '''u1 = 20
+        u2 = 0.1
         u3 = -0.1
-        u4 = -0.1
-        u5 = 0
+        u4 = -0.05
+        u5 = -0.1'''
+        u1 = 10
+        u2 = 0.01
+        u3 = -0.1
+        u4 = -0.05
+        u5 = -0.01
         '''u2 = 0
         u3 = 0
         u4 = 0
@@ -153,6 +158,7 @@ class Foule():
                 pfire = 0
                 if len(self.map.incendies)>0 :
                     pfire = fon.pfire(voisin,sor,self.map.incendies[0])
+                #print(pd,pc,pr,pf,pfire)
                 # Calculer l'intensité totale du mouvement
                 p_total = u1 * pd + u2 * pc + u3 * pr + u4 * pf + u5 * pfire
                 if p_total > p_max:

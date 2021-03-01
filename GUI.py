@@ -1,11 +1,12 @@
+import random
 import time
 from tkinter import *
 import tkinter.filedialog
 import seaborn as sns
 import matplotlib.pyplot as plt
 import fonction
-import foule
-
+import foule_ca
+import foule_sf
 
 # La classe GUI
 class GUI:
@@ -14,7 +15,6 @@ class GUI:
 
     # Constructeur
     def __init__(self):
-        self.pid = None
         self.foule = None
         self.etat = True
 
@@ -154,14 +154,19 @@ class GUI:
 
     # Calculer le ratio d'affichage
     def change_radio(self):
-        length_width, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
+        length_width, wall, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
         # self.Pic_Ratio = min(600/length_width[0],350/length_width[1])
 
     # Desiner l'etat d'initialisation
     def init(self):
-        length_width, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
+        length_width, wall, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
         print(self.txt_nom.get())
-        self.foule = foule.Foule(people, length_width, sorties, obstacles, incendies)
+        if self.model.get() == 'AC':
+            self.foule = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
+        elif self.model.get() == 'MFS':
+            self.foule = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+        else:
+            self.foule = foule_sf.Foule([], [], [], [], [], [])
         self.set_sortie(self.foule)
         self.set_obstacle(self.foule)
         self.set_incendie(self.foule)
@@ -181,7 +186,7 @@ class GUI:
             if self.etat:
                 self.foule = self.foule.maj()
                 self.update_people(self.foule)
-                # time.sleep(random.uniform(0.15, 0.25))
+                #time.sleep(random.uniform(0.15, 0.25))
                 self.canvas.update()
                 self.window.update()
             else:
@@ -195,9 +200,9 @@ class GUI:
         print("time:")
         print(time_pass)
         # Dessiner heat map
-        sns.heatmap(self.foule.thmap.T, cmap="Reds")
+        '''sns.heatmap(self.foule.thmap.T, cmap="Reds")
         plt.axis('equal')
-        plt.show()
+        plt.show()'''
 
     # Mettre la simulation en pause
     def pause(self):
