@@ -8,6 +8,7 @@ import fonction
 import foule_ca
 import foule_sf
 
+
 # La classe GUI
 class GUI:
     # Taux d'agrandissement graphique.
@@ -17,6 +18,7 @@ class GUI:
     def __init__(self):
         self.foule = None
         self.etat = True
+        self.ini = False
 
         # Interface principale
         self.window = Tk()
@@ -102,7 +104,8 @@ class GUI:
         Label(window_ini2, textvariable=self.txt_nom).place(x=100, y=125)
 
         # Bouton oui et annuler
-        command1 = lambda: [window_ini2.destroy(), self.change_radio(), self.init()]
+        # command1 = lambda: [window_ini2.destroy(), self.change_radio(), self.init()]
+        command1 = lambda: [window_ini2.destroy(), self.init()]
         button_oui = Button(window_ini2, text='Oui', command=command1)
         button_oui.place(x=80, y=160)
         command2 = lambda: [self.annuler(), window_ini2.destroy()]
@@ -153,66 +156,76 @@ class GUI:
             self.canvas.create_oval(x1, y1, x2, y2, fill="black", outline="black", tag=per.name())
 
     # Calculer le ratio d'affichage
-    def change_radio(self):
+    '''def change_radio(self):
         length_width, wall, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
-        # self.Pic_Ratio = min(600/length_width[0],350/length_width[1])
+        # self.Pic_Ratio = min(600/length_width[0],350/length_width[1])'''
 
     # Desiner l'etat d'initialisation
     def init(self):
-        length_width, wall, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
-        print(self.txt_nom.get())
-        if self.model.get() == 'AC':
-            self.foule = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
-        elif self.model.get() == 'MFS':
-            self.foule = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+        if self.model.get() == '' or self.txt_nom.get() == '':
+            print("Error: no model or fichier")
         else:
-            self.foule = foule_sf.Foule([], [], [], [], [], [])
-        self.set_sortie(self.foule)
-        self.set_obstacle(self.foule)
-        self.set_incendie(self.foule)
-        self.show_people(self.foule)
+            length_width, wall, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
+            print(self.txt_nom.get())
+            if self.model.get() == 'AC':
+                self.ini = True
+                self.foule = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
+            if self.model.get() == 'MFS':
+                self.ini = True
+                self.foule = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+            #else:
+            #    self.ini = False
+                # self.foule = foule_sf.Foule([], [], [], [], [], [])
+            self.set_sortie(self.foule)
+            self.set_obstacle(self.foule)
+            self.set_incendie(self.foule)
+            self.show_people(self.foule)
 
     # Lancer l'animation de simulation
     def run(self):
-        # calculer le temps de simulation
-        time_start = time.time()
-        self.set_sortie(self.foule)
-        self.set_obstacle(self.foule)
-        self.show_people(self.foule)
+        if self.ini:
+            # calculer le temps de simulation
+            time_start = time.time()
+            self.set_sortie(self.foule)
+            self.set_obstacle(self.foule)
+            self.show_people(self.foule)
 
-        # MAJ la visualisation
-        i = 0
-        while len(self.foule.list_person) != 0:
-            if self.etat:
-                self.foule = self.foule.maj()
-                self.update_people(self.foule)
-                #time.sleep(random.uniform(0.15, 0.25))
-                self.canvas.update()
-                self.window.update()
-            else:
-                # time.sleep(random.uniform(0.15, 0.25))
-                self.canvas.update()
-                self.window.update()
-            i += 1
-            # print(i)
-        # Calculer le temps de simulation
-        time_pass = time.time() - time_start
-        print("time:")
-        print(time_pass)
-        # Dessiner heat map
-        sns.heatmap(self.foule.thmap.T, cmap="Reds")
-        plt.axis('equal')
-        plt.show()
+            # MAJ la visualisation
+            i = 0
+            while len(self.foule.list_person) != 0:
+                if self.etat:
+                    self.foule = self.foule.maj()
+                    self.update_people(self.foule)
+                    # time.sleep(random.uniform(0.15, 0.25))
+                    self.canvas.update()
+                    self.window.update()
+                else:
+                    # time.sleep(random.uniform(0.15, 0.25))
+                    self.canvas.update()
+                    self.window.update()
+                i += 1
+                # print(i)
+            # Calculer le temps de simulation
+            time_pass = time.time() - time_start
+            print("time:")
+            print(time_pass)
+            # Dessiner heat map
+            sns.heatmap(self.foule.thmap.T, cmap="Reds")
+            plt.axis('equal')
+            plt.show()
 
     # Mettre la simulation en pause
     def pause(self):
-        self.etat = False
+        if self.ini:
+            self.etat = False
 
     # Reprendre la simulation
     def resume(self):
-        self.etat = True
+        if self.ini:
+            self.etat = True
 
     # Arreter la simulation
     def stop(self):
-        self.foule.list_person = []
-        self.canvas.delete(ALL)
+        if self.ini:
+            self.foule.list_person = []
+            self.canvas.delete(ALL)

@@ -6,51 +6,55 @@ import math
 
 # la fonction pour obtenir les données de fichier.
 def lire_txt(filepath):
-    f = open(filepath, 'r')
-    lines = f.readlines()
-    tmp = 0
-    length_width = (0, 0)
-    wall = []
-    sortie = []
-    obstacle = []
-    incendie = []
-    foule = []
-    # traiter les contenues de fichier et stocker les données
-    for line in lines:
-        line = re.split(",|;|\n", line)
-        if line[0] == 'longueur_largeur:':
-            tmp = 1
-        elif line[0] == 'Wall:':
-            tmp = 2
-        elif line[0] == 'Sortie:':
-            tmp = 3
-        elif line[0] == 'Obstacle:':
-            tmp = 4
-        elif line[0] == 'Incendie:':
-            tmp = 5
-        elif line[0] == 'Foule:':
-            tmp = 6
-        else:
-            if tmp == 1:
-                length_width = (int(line[0]), int(line[1]))
-            elif tmp == 2:
-                w = []
-                for i in range(0, int((len(line) - 1) / 2)):
-                    wall_s = (int(line[2 * i]), int(line[2 * i + 1]))
-                    w.append(wall_s)
-                wall.append(w)
-                # wall.append((int(line[0]), int(line[1])))
-            elif tmp == 3:
-                sortie.append((int(line[0]), int(line[1])))
-            elif tmp == 4:
-                obstacle.append([(int(line[0]), int(line[1])), (int(line[2]), int(line[3]))])
-            elif tmp == 5:
-                incendie.append((int(line[0]), int(line[1])))
-            elif tmp == 6:
-                foule.append((float(line[0]), float(line[1])))
-    print("nb per:")
-    print(len(foule))
-    return [length_width, wall, sortie, obstacle, incendie, foule]
+    try:
+        f = open(filepath, 'r')
+    except IOError:
+        print ("Error: non fichier")
+    else:
+        lines = f.readlines()
+        tmp = 0
+        length_width = (0, 0)
+        wall = []
+        sortie = []
+        obstacle = []
+        incendie = []
+        foule = []
+        # traiter les contenues de fichier et stocker les données
+        for line in lines:
+            line = re.split(",|;|\n", line)
+            if line[0] == 'longueur_largeur:':
+                tmp = 1
+            elif line[0] == 'Wall:':
+                tmp = 2
+            elif line[0] == 'Sortie:':
+                tmp = 3
+            elif line[0] == 'Obstacle:':
+                tmp = 4
+            elif line[0] == 'Incendie:':
+                tmp = 5
+            elif line[0] == 'Foule:':
+                tmp = 6
+            else:
+                if tmp == 1:
+                    length_width = (int(line[0]), int(line[1]))
+                elif tmp == 2:
+                    w = []
+                    for i in range(0, int((len(line) - 1) / 2)):
+                        wall_s = (int(line[2 * i]), int(line[2 * i + 1]))
+                        w.append(wall_s)
+                    wall.append(w)
+                    # wall.append((int(line[0]), int(line[1])))
+                elif tmp == 3:
+                    sortie.append((int(line[0]), int(line[1])))
+                elif tmp == 4:
+                    obstacle.append([(int(line[0]), int(line[1])), (int(line[2]), int(line[3]))])
+                elif tmp == 5:
+                    incendie.append((int(line[0]), int(line[1])))
+                elif tmp == 6:
+                    foule.append((float(line[0]), float(line[1])))
+        print("nb per:")
+        print(len(foule))
+        return [length_width, wall, sortie, obstacle, incendie, foule]
 
 
 # Déterminer la direction du mouvement des piétons 1-8
