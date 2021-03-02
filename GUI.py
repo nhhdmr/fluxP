@@ -200,9 +200,9 @@ class GUI:
         print("time:")
         print(time_pass)
         # Dessiner heat map
-        '''sns.heatmap(self.foule.thmap.T, cmap="Reds")
+        sns.heatmap(self.foule.thmap.T, cmap="Reds")
         plt.axis('equal')
-        plt.show()'''
+        plt.show()
 
     # Mettre la simulation en pause
     def pause(self):

@@ -5,7 +5,9 @@ import fonction as fon
 import map
 
 
+# La classe Person
 class Person:
+    # la fonction de construction
     def __init__(self, id, x, y):
         self.id = id
         self.position = (x, y)
@@ -24,7 +26,9 @@ class Person:
         return "ID_" + str(self.id)
 
 
+# La classe Foule
 class Foule:
+    # la fonction de construction
     def __init__(self, coords_person, l_w, wall, sorties, obstacles, incendies):
         self.arg_A = 2000
         self.arg_B = 0.08
@@ -42,16 +46,20 @@ class Foule:
         # pour stocker les donnees de heat map
         self.thmap = np.zeros(((l_w[0] + 2), (l_w[1] + 2)))
 
+    # Comptez le nombre de personnes à chaque point du graphique
+    # Une personne une fois -> la valeur correspondante +1
     def addMapValue(self, mp, x, y, add=1):
         x, y = int(x), int(y)
         mp[x][y] += add
 
+    # Déterminez si un point se trouve dans une zone.
     def point_in_zone(self, point):
         if 0 <= point[0] <= self.map.length - 1 and 0 <= point[1] <= self.map.width - 1:
             return True
         else:
             return False
 
+    # Calculer la force de mur
     def force_mur(self, person):
         sum_fiw = (0, 0)
         d_max = 3
@@ -99,9 +107,10 @@ class Foule:
                         sum_fiw = (sum_fiw[0], fiw * (-1) + sum_fiw[1])
         return sum_fiw
 
+    # Calculer la force des obstacles
     def force_obs(self, person, zone_obs):
         sum_fiw = (0, 0)
-        d_max = 4
+        d_max = 3
         d = (zone_obs[0][0] - person.position[0]) * 0.4
         if (d < d_max) and (d > 0) and (person.position[1] > zone_obs[0][1]) and (person.position[1] < zone_obs[1][1]):
             fiw = self.arg_A * math.exp((person.rayon - d) / self.arg_B)
@@ -120,8 +129,10 @@ class Foule:
             sum_fiw = (sum_fiw[0], fiw + sum_fiw[1])
         return sum_fiw
 
+    # Calculer l'accélération
     def calcul_a(self):
         for person in self.list_person:
+            # Calculez la force motrice.
             e = ((person.destination[0] - person.position[0]) * 0.4,
                  (person.destination[1] - person.position[1]) * 0.4)
             tmp = math.sqrt(math.pow(e[0], 2) + math.pow(e[1], 2))
@@ -135,6 +146,8 @@ class Foule:
             force_auto = (person.poids * diff_x / person.dt, person.poids * diff_y / person.dt)
             # print('force_auto: ' + str(force_auto) + '  diff_x: ' + str(diff_x) + '  diff_y: ' + str(
             #    diff_y))
+
+            # Calculez la force de la foule
             force_foule = (0, 0)
             for per in self.list_person:
                 if per.id == person.id:
@@ -152,6 +165,8 @@ class Foule:
                 # print(distance)
                 force_foule = (force_foule[0] + d[0] / distance * res_nij, force_foule[1] + d[1] / distance * res_nij)
             # force_foule = (0, 0)
+
+            # Calculez la force des obstacles
             force_obs = (0, 0)
             f_mur = self.force_mur(person)
             force_obs = (force_obs[0] + f_mur[0], force_obs[1] + f_mur[1])
@@ -159,11 +174,14 @@ class Foule:
                 f_obs = self.force_obs(person, obs)
                 force_obs = (force_obs[0] + f_obs[0], force_obs[1] + f_obs[1])
             # print('force_auto: ' + str(force_auto) + '  force_foule: ' + str(force_foule) + '  force_obs: ' + str(force_obs))
+            # Calculez la force total
             force_total = (force_auto[0] + force_foule[0] + force_obs[0], force_auto[1] + force_foule[1] + force_obs[1])
             # print(force_total)
+            # Calculer l'accélération
             person.a = (force_total[0] / person.poids, force_total[1] / person.poids)
 
     def move(self):
+        # Supprimer les personnes qui sont parties
         new_list = []
         for person in self.list_person:
             if self.point_in_zone(person.position):
@@ -172,18 +190,23 @@ class Foule:
         self.list_person = new_list
 
         for person in self.list_person:
+            # Calculer la nouvelle vitesse
             new_vx = person.v[0] + person.a[0] * self.delta_time
             new_vy = person.v[1] + person.a[1] * self.delta_time
+            # Calculer le déplacement
             l_x = (person.v[0] + new_vx) / 2 * self.delta_time / 0.4
             l_y = (person.v[1] + new_vy) / 2 * self.delta_time / 0.4
             # print('l_x:' + str(l_x) + ' l_y:' + str(l_y))
+            # Mettre à jour les informations de la personne
             person.position = (person.position[0] + l_x, person.position[1] + l_y)
+            self.thmap[int(person.position[0])][int(person.position[1])] += 1
             person.v = (new_vx, new_vy)
-            d = ((person.position[0] - person.destination[0]) * 0.4,
+            '''d = ((person.position[0] - person.destination[0]) * 0.4,
                  (person.position[1] - person.destination[1]) * 0.4)
-            distance = math.sqrt(math.pow(d[0], 2) + math.pow(d[1], 2))
+            distance = math.sqrt(math.pow(d[0], 2) + math.pow(d[1], 2))'''
             # print (distance)
 
+    # Mettre à jour les positions des piétons
     def maj(self):
         self.calcul_a()
         self.move()

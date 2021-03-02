@@ -35,11 +35,11 @@ def lire_txt(filepath):
                 length_width = (int(line[0]), int(line[1]))
             elif tmp == 2:
                 w = []
-                for i in range(0, int((len(line)-1)/2)):
-                    wall_s = (int(line[2*i]),int(line[2*i+1]))
+                for i in range(0, int((len(line) - 1) / 2)):
+                    wall_s = (int(line[2 * i]), int(line[2 * i + 1]))
                     w.append(wall_s)
                 wall.append(w)
-                #wall.append((int(line[0]), int(line[1])))
+                # wall.append((int(line[0]), int(line[1])))
             elif tmp == 3:
                 sortie.append((int(line[0]), int(line[1])))
             elif tmp == 4:
@@ -144,5 +144,6 @@ def pfire(point, sortie, incendie):
     return 1 - op2 / op1
 
 
+# La fonction G
 def g(x):
-    return np.max(x, 0)
+    return max(x, 0)

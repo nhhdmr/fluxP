@@ -1,7 +1,9 @@
+import math
 from math import fabs, sqrt
 import pytest
 import fonction as fon
 import foule_ca
+import foule_sf
 import map
 
 
@@ -9,6 +11,12 @@ import map
 def test_lire_txt():
     res = fon.lire_txt('test.txt')
     assert res == [(50,30),[[(0, 49)], [(0, 29)], [(0, 49)], [(0, 3), (7, 29)]],[(0,6),(0,5),(0,4)],[[(5,5),(8,4)]],[(10,10)],[(8,2),(10,6)]]
+
+
+# test de la fonction g dans fonction.py
+def test_g():
+    assert fon.g(-3) == 0
+    assert fon.g(3) == 3
 
 
 # test de la fonction direction dans fonction.py
@@ -105,7 +113,7 @@ def test_map():
 
 
 # test de la classe person dans foule_ca.py
-def test_per():
+def test_per_ca():
     res = foule_ca.Person(2, 21, 22)
     assert res.id == 2
     assert res.position == (21,22)
@@ -114,7 +122,7 @@ def test_per():
 
 
 # test d'initialisation de la classe foule dans foule_ca.py
-def test_foule():
+def test_foule_ca():
     length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('test.txt')
     res = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
     assert res.map.length == 50
@@ -135,7 +143,7 @@ def test_foule():
 
 
 # test de la fonction addMapValue de la classe foule dans foule_ca.py
-def test_amv():
+def test_amv_ca():
     length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('test.txt')
     res = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
     res.addMapValue(res.thmap,10,11)
@@ -144,7 +152,7 @@ def test_amv():
 
 
 # test de la fonction point_in_zone de la classe foule dans foule_ca.py
-def test_piz():
+def test_piz_ca():
     length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('test.txt')
     res = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
     assert res.point_in_zone((12,13))
@@ -197,7 +205,7 @@ def test_pcmn():
 
 
 # test de la fonction calcul de la classe foule dans foule_ca.py
-def test_calcul():
+def test_calcul_ca():
     length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('test.txt')
     res = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
     list = res.calcul()
@@ -208,13 +216,112 @@ def test_calcul():
 
 
 # test de la fonction maj de la classe foule dans foule_ca.py
-def test_maj():
+def test_maj_ca():
     length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('test.txt')
     res = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
     res.maj()
     assert res.list_person[0].position == (7,2)
     assert res.list_person[1].position == (9,7)
     assert res.list_move_pc == [((8,2),6),((10,6),5)]
+
+
+# test de la classe person dans foule_sf.py
+def test_per_sf():
+    res = foule_sf.Person(2, 21, 22)
+    assert res.id == 2
+    assert res.position == (21,22)
+    assert res.dt == 0.05
+    assert res.poids == 50
+    assert res.rayon == 0.2
+    assert res.vitesse_esp == 1
+    assert res.v == (0, 0)
+    assert res.a == (0, 0)
+    assert res.destination == (0, 0)
+    assert res.name() == 'ID_2'
+
+
+# test d'initialisation de la classe foule dans foule_sf.py
+def test_foule_mfs():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    assert res.map.length == 27
+    assert res.map.width == 17
+    assert res.map.wall == [[(0, 26)], [(0, 3),(5,16)], [(0, 26)], [(0, 16)]]
+    assert res.map.sorties == [(26,4)]
+    assert res.map.incendies == []
+    assert res.map.zone_obstacale == [((5, 4), (8, 5))]
+    assert (0, 15) in res.map.list_obstacle
+    assert (6, 4) in res.map.list_obstacle
+    assert len(res.list_person) == 2
+    assert res.list_person[0].id == 1
+    assert res.list_person[0].position == (1.5, 15.5)
+
+
+# test de la fonction addMapValue de la classe foule dans foule_sf.py
+def test_amv_sf():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    res.addMapValue(res.thmap,22,10)
+    assert res.thmap[22][10] == 1
+    assert res.thmap[2][2] == 0
+
+
+# test de la fonction point_in_zone de la classe foule dans foule_sf.py
+def test_piz_sf():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    assert res.point_in_zone((11,10))
+    assert not res.point_in_zone((60,10))
+
+
+# test de la fonction force_mur de la classe foule dans foule_sf.py
+def test_force_mur():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    for_mur = res.force_mur(res.list_person[0])
+    assert for_mur[0] == 2000.0
+    assert fabs(for_mur[1] - (-13.47589)) < 0.00001
+
+
+# test de la fonction force_obs de la classe foule dans foule_sf.py
+def test_force_obs():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    for_obs = res.force_obs(res.list_person[1],res.map.zone_obstacale[0])
+    assert for_obs[0] == 0
+    assert fabs(for_obs[1] - (-164.17000)) < 0.00001
+
+
+# test de la fonction calcul_a de la classe foule dans foule_sf.py
+def test_cal_a():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    res.calcul_a()
+    assert fabs(res.list_person[0].a[0] - (58.10474)) < 0.00001
+    assert fabs(res.list_person[0].a[1] - (-8.76766)) < 0.00001
+
+
+# test de la fonction move de la classe foule dans foule_sf.py
+def test_move():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    res.calcul_a()
+    res.move()
+    assert fabs(res.list_person[0].v[0] - (0.29052)) < 0.00001
+    assert fabs(res.list_person[0].v[1] - (-0.04384)) < 0.00001
+    assert fabs(res.list_person[0].position[0] - (1.50182)) < 0.00001
+    assert fabs(res.list_person[0].position[1] - (15.49973)) < 0.00001
+
+
+# test de la fonction maj de la classe foule dans foule_sf.py
+def test_maj_sf():
+    length_width, wall, sorties, obstacles, incendies, people = fon.lire_txt('MFS_ex copy.txt')
+    res = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+    res.maj()
+    assert fabs(res.list_person[1].v[0] - (0.09988)) < 0.00001
+    assert fabs(res.list_person[1].v[1] - (-0.01131)) < 0.00001
+    assert fabs(res.list_person[1].position[0] - (6.00062)) < 0.00001
+    assert fabs(res.list_person[1].position[1] - (2.99993)) < 0.00001
 
 
 if __name__ == '__main__':

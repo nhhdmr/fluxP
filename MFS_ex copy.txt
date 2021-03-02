@@ -8,6 +8,8 @@ Wall:
 Sortie:
 26,4
 Obstacle:
+5,4;8,5
 Incendie:
 Foule:
 1.5,15.5
+6,3
