@@ -13,12 +13,12 @@ class Person:
 
     # la fonction de construction
     def __init__(self, id, x, y):
-        self.id = id
-        self.position = (x, y)
-        self.speed = Person.normal_speed
-        self.stat = False
-        self.pos_pass = []
-        self.rest = 0
+        self.id = id   # id de personne
+        self.position = (x, y)  # la position de personne
+        self.speed = Person.normal_speed  # la vitesse de personne
+        self.stat = False  # la personne est déjà sortie ou pas
+        self.pos_pass = []  # les positions que la personne a passé
+        self.rest = 0  # le nombre des restes en meme position
 
     # retourner string pour gérer les piètons sur la visualisation
     def name(self):
@@ -47,6 +47,7 @@ class Foule:
                 sor = fon.proche_sortie(pt,self.map.sorties)
                 pd = fon.pd(pt,sor)
                 self.pos_pd[i][j] = pd
+        self.delta_time = 0.4
 
     # Comptez le nombre de personnes à chaque point du graphique
     # Une personne une fois -> la valeur correspondante +1

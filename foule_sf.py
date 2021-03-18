@@ -9,17 +9,15 @@ import map
 class Person:
     # la fonction de construction
     def __init__(self, id, x, y):
-        self.id = id
-        self.position = (x, y)
-        self.dt = 0.05  # + random.randint(0, 6) / 100  # t_i of the people
-        self.poids = 50  # + random.randint(0, 20)  # Weight
-        # self.rayon = (40 + random.randint(0, 5)) / 2  # Size of the people
-        self.rayon = (0.4) / 2  # Size of the people
-        # self.vitesse_esp = (60 + random.randint(0, 60)) / 100  # Target speed
-        self.vitesse_esp = (100) / 100  # Target speed
-        self.v = (0, 0)  # Present speed
-        self.a = (0, 0)  # Present acceleration
-        self.destination = (0, 0)  # Target end position
+        self.id = id  # id de personne
+        self.position = (x, y)  # la position de personne
+        self.dt = 0.05   # delta t de personne
+        self.poids = 50  # poids de personne
+        self.rayon = (0.4) / 2  # taille de personne
+        self.vitesse_esp = (100) / 100  # la vitesse esperée
+        self.v = (0, 0)  # la vitesse presente
+        self.a = (0, 0)  # l'acceleration prensent
+        self.destination = (0, 0)  # destination
 
     # retourner string pour gérer les piètons sur la visualisation
     def name(self):

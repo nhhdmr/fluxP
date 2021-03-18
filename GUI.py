@@ -185,10 +185,10 @@ class GUI:
     def run(self):
         if self.ini:
             # calculer le temps de simulation
-            time_start = time.time()
-            self.set_sortie(self.foule)
-            self.set_obstacle(self.foule)
-            self.show_people(self.foule)
+            #time_start = time.time()
+            #self.set_sortie(self.foule)
+            #self.set_obstacle(self.foule)
+            #self.show_people(self.foule)
 
             # MAJ la visualisation
             i = 0
@@ -205,8 +205,9 @@ class GUI:
                     self.window.update()
                 i += 1
                 # print(i)
+
             # Calculer le temps de simulation
-            time_pass = time.time() - time_start
+            time_pass = i * self.foule.delta_time
             print("time:")
             print(time_pass)
             # Dessiner heat map

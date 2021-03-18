@@ -34,4 +34,7 @@ for i in range(0,50):
     y = random.randint(22,28)
     print(str(x)+','+str(y))'''
 
-print(max(0, 3))
+for i in range(0,200):
+    x = random.randint(2,36)
+    y = random.randint(2,36)
+    print(str(x)+','+str(y))
