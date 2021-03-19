@@ -61,22 +61,6 @@ class Foule:
     def force_mur(self, person):
         sum_fiw = (0, 0)
         d_max = 3
-        '''d = (person.position[0] - 1) * 0.4
-        if 0 < d < d_max:
-            fiw = self.arg_A * math.exp((person.rayon - d) / self.arg_B)
-            sum_fiw = (fiw + sum_fiw[0], sum_fiw[1])
-        d = (self.map.length - person.position[0]) * 0.4
-        if 0 < d < d_max:
-            fiw = self.arg_A * math.exp((person.rayon - d) / self.arg_B)
-            sum_fiw = (fiw * (-1) + sum_fiw[0], sum_fiw[1])
-        d = (person.position[1] - 1) * 0.4
-        if 0 < d < d_max:
-            fiw = self.arg_A * math.exp((person.rayon - d) / self.arg_B)
-            sum_fiw = (sum_fiw[0], fiw + sum_fiw[1])
-        d = (self.map.width - person.position[1]) * 0.4
-        if 0 < d < d_max:
-            fiw = self.arg_A * math.exp((person.rayon - d) / self.arg_B)
-            sum_fiw = (sum_fiw[0], fiw * (-1) + sum_fiw[1])'''
         d = (person.position[0] - 1) * 0.4
         if 0 < d < d_max:
             for line in self.map.wall[3]:
@@ -84,7 +68,6 @@ class Foule:
                     fiw = self.arg_A * math.exp((person.rayon - d) / self.arg_B)
                     sum_fiw = (fiw + sum_fiw[0], sum_fiw[1])
         d = (self.map.length - person.position[0]) * 0.4
-        #if (0 < d < d_max) and (person.position[1] > 5.5 or person.position[1] < 3.5):
         if 0 < d < d_max:
             for line in self.map.wall[1]:
                 if line[0] < person.position[1] < line[1]:
@@ -142,8 +125,6 @@ class Foule:
             diff_y = v0e0[1] - person.v[1]
 
             force_auto = (person.poids * diff_x / person.dt, person.poids * diff_y / person.dt)
-            # print('force_auto: ' + str(force_auto) + '  diff_x: ' + str(diff_x) + '  diff_y: ' + str(
-            #    diff_y))
 
             # Calculez la force de la foule
             force_foule = (0, 0)
@@ -157,12 +138,9 @@ class Foule:
                     continue
                 if distance >= 1.4:
                     continue
-                # print(distance)
                 diff_r_d = (person.rayon + per.rayon - distance)
                 res_nij = self.arg_A * math.exp(diff_r_d / self.arg_B)  # + self.k*fon.g(diff_r_d)
-                # print(distance)
                 force_foule = (force_foule[0] + d[0] / distance * res_nij, force_foule[1] + d[1] / distance * res_nij)
-            # force_foule = (0, 0)
 
             # Calculez la force des obstacles
             force_obs = (0, 0)
@@ -171,10 +149,8 @@ class Foule:
             for obs in self.map.zone_obstacale:
                 f_obs = self.force_obs(person, obs)
                 force_obs = (force_obs[0] + f_obs[0], force_obs[1] + f_obs[1])
-            # print('force_auto: ' + str(force_auto) + '  force_foule: ' + str(force_foule) + '  force_obs: ' + str(force_obs))
             # Calculez la force total
             force_total = (force_auto[0] + force_foule[0] + force_obs[0], force_auto[1] + force_foule[1] + force_obs[1])
-            # print(force_total)
             # Calculer l'accélération
             person.a = (force_total[0] / person.poids, force_total[1] / person.poids)
 
@@ -183,7 +159,6 @@ class Foule:
         new_list = []
         for person in self.list_person:
             if self.point_in_zone(person.position):
-                # if person.position[0] < 26:
                 new_list.append(person)
         self.list_person = new_list
 
@@ -194,15 +169,11 @@ class Foule:
             # Calculer le déplacement
             l_x = (person.v[0] + new_vx) / 2 * self.delta_time / 0.4
             l_y = (person.v[1] + new_vy) / 2 * self.delta_time / 0.4
-            # print('l_x:' + str(l_x) + ' l_y:' + str(l_y))
             # Mettre à jour les informations de la personne
             person.position = (person.position[0] + l_x, person.position[1] + l_y)
-            self.thmap[int(person.position[0])][int(person.position[1])] += 1
+            if int(person.position[0]) < self.thmap.shape[0] and int(person.position[1]) < self.thmap.shape[1]:
+                self.thmap[int(person.position[0])][int(person.position[1])] += 1
             person.v = (new_vx, new_vy)
-            '''d = ((person.position[0] - person.destination[0]) * 0.4,
-                 (person.position[1] - person.destination[1]) * 0.4)
-            distance = math.sqrt(math.pow(d[0], 2) + math.pow(d[1], 2))'''
-            # print (distance)
 
     # Mettre à jour les positions des piétons
     def maj(self):

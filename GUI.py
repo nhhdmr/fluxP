@@ -1,5 +1,3 @@
-import random
-import time
 from tkinter import *
 import tkinter.filedialog
 import seaborn as sns
@@ -51,8 +49,18 @@ class GUI:
         self.button_ralentir.place(x=550, y=450)
 
         # le fichier et modele choisis
-        self.txt_nom = StringVar()
         self.model = StringVar()
+        self.txt_nom = StringVar()
+        # les paramètre de AC et MFS
+        self.u1 = DoubleVar()
+        self.u2 = DoubleVar()
+        self.u3 = DoubleVar()
+        self.u4 = DoubleVar()
+        self.u5 = DoubleVar()
+        self.arg_a = DoubleVar()
+        self.arg_b = DoubleVar()
+        self.k = DoubleVar()
+        self.dt_time = DoubleVar()
 
     # importer un fichier pour initialiser la simulation
     def upload(self):
@@ -60,7 +68,6 @@ class GUI:
                                                               initialdir='/Users/mr/Desktop/test')
         if select_file_name != '':
             self.txt_nom.set(select_file_name)
-        # return select_file_name
 
     # La fonction pour annuler l'initialisation
     def annuler(self):
@@ -90,7 +97,7 @@ class GUI:
     # L'interface pour importer le fichier
     def f_ini2(self):
         window_ini2 = Toplevel(self.window)
-        window_ini2.geometry('300x200')
+        window_ini2.geometry('400x400')
         window_ini2.title('Initialiser')
 
         # L'affichage du modele choisi
@@ -100,17 +107,75 @@ class GUI:
         button_importer = Button(window_ini2, text='importer', command=self.upload)
         button_importer.place(x=180, y=50)
         # L'affichage du fichier choisi
-        Label(window_ini2, text='Fichier sélectionné:  ').place(x=30, y=90)
-        Label(window_ini2, textvariable=self.txt_nom).place(x=100, y=125)
+        Label(window_ini2, text='Fichier sélectionné:  ').place(x=30, y=80)
+        Label(window_ini2, textvariable=self.txt_nom).place(x=50, y=105)
+
+        # pour entrer les paramètres de AC
+        if self.model.get() == 'AC':
+            Label(window_ini2, text='u1:  ').place(x=30, y=140)
+            tx_u1 = Entry(window_ini2,textvariable=self.u1)
+            tx_u1.place(x=60, y=140,width=60)
+            Label(window_ini2, text='poids attractivité de la sortie').place(x=130, y=140)
+
+            Label(window_ini2, text='u2:  ').place(x=30, y=170)
+            tx_u2 = Entry(window_ini2,textvariable=self.u2)
+            tx_u2.place(x=60, y=170,width=60)
+            Label(window_ini2, text='poids de attractivité du foule').place(x=130, y=170)
+
+            Label(window_ini2, text='u3:  ').place(x=30, y=200)
+            tx_u3 = Entry(window_ini2,textvariable=self.u3)
+            tx_u3.place(x=60, y=200, width=60)
+            Label(window_ini2, text='poids de répulsion entre foule et obstacle').place(x=130, y=200)
+
+            Label(window_ini2, text='u4:  ').place(x=30, y=230)
+            tx_u4 = Entry(window_ini2,textvariable=self.u4)
+            tx_u4.place(x=60, y=230, width=60)
+            Label(window_ini2, text='poids de friction').place(x=130, y=230)
+
+            Label(window_ini2, text='u5:  ').place(x=30, y=260)
+            tx_u5 = Entry(window_ini2,textvariable=self.u5)
+            tx_u5.place(x=60, y=260, width=60)
+            Label(window_ini2, text='poids de répulsion du feu').place(x=130, y=260)
+
+            Label(window_ini2, text='note: u1, u2 > 0; u3, u4, u5 < 0').place(x=30, y=300)
+            Label(window_ini2, text='Valeurs recommandées: ').place(x=30, y=320)
+            Label(window_ini2, text='u1=10, u2=0.01, u3=-0.1, u4=-0.05, u5=-0.01').place(x=50, y=340)
+        # pour entrer les paramètres de MFS
+        elif self.model.get() == 'MFS':
+            Label(window_ini2, text='A:  ').place(x=30, y=140)
+            arg_A = Entry(window_ini2,textvariable=self.arg_a)
+            arg_A.place(x=60, y=140, width=60)
+            Label(window_ini2, text='constant A').place(x=130, y=140)
+
+            Label(window_ini2, text='B:  ').place(x=30, y=170)
+            arg_B = Entry(window_ini2,textvariable=self.arg_b)
+            arg_B.place(x=60, y=170, width=60)
+            Label(window_ini2, text='constant B, une petite valeur').place(x=130, y=170)
+
+            Label(window_ini2, text='k:  ').place(x=30, y=200)
+            arg_k = Entry(window_ini2,textvariable=self.k)
+            arg_k.place(x=60, y=200, width=60)
+            Label(window_ini2, text='constant K, une grande valeur').place(x=130, y=200)
+
+            Label(window_ini2, text='delta_time:  ').place(x=30, y=230)
+            delta_time = Entry(window_ini2,textvariable=self.dt_time)
+            delta_time.place(x=110, y=230, width=60)
+            Label(window_ini2, text='temps de mise à jour').place(x=170, y=230)
+
+            Label(window_ini2, text='note: A, B, k, delta_time > 0').place(x=30, y=300)
+            Label(window_ini2, text='Valeurs recommandées: ').place(x=30, y=320)
+            Label(window_ini2, text='A=2000, B=0.08, k=120000, delta_time=0.005').place(x=50, y=340)
+        else:
+            Label(window_ini2, text='Veuillez sélectionner un modèle').place(x=80, y=230)
 
         # Bouton oui et annuler
         # command1 = lambda: [window_ini2.destroy(), self.change_radio(), self.init()]
         command1 = lambda: [window_ini2.destroy(), self.init()]
         button_oui = Button(window_ini2, text='Oui', command=command1)
-        button_oui.place(x=80, y=160)
+        button_oui.place(x=100, y=370)
         command2 = lambda: [self.annuler(), window_ini2.destroy()]
         button_annuler = Button(window_ini2, text='Annuler', command=command2)
-        button_annuler.place(x=180, y=160)
+        button_annuler.place(x=220, y=370)
 
     # Dessiner des obstacles
     def set_obstacle(self, foule):
@@ -170,9 +235,32 @@ class GUI:
             if self.model.get() == 'AC':
                 self.ini = True
                 self.foule = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
+                self.foule.u1 = self.u1.get()
+                self.foule.u2 = self.u2.get()
+                self.foule.u3 = self.u3.get()
+                self.foule.u4 = self.u4.get()
+                self.foule.u5 = self.u5.get()
+
+                print("params:")
+                print(self.foule.u1)
+                print(self.foule.u2)
+                print(self.foule.u3)
+                print(self.foule.u4)
+                print(self.foule.u5)
+
             if self.model.get() == 'MFS':
                 self.ini = True
                 self.foule = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
+                self.foule.arg_A = self.arg_a.get()
+                self.foule.arg_B = self.arg_b.get()
+                self.foule.k = self.k.get()
+                self.foule.delta_time = self.dt_time.get()
+
+                print("params:")
+                print(self.foule.arg_A)
+                print(self.foule.arg_B)
+                print(self.foule.k)
+                print(self.foule.delta_time)
             #else:
             #    self.ini = False
                 # self.foule = foule_sf.Foule([], [], [], [], [], [])
