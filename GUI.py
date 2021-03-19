@@ -65,7 +65,7 @@ class GUI:
     # importer un fichier pour initialiser la simulation
     def upload(self):
         select_file_name = tkinter.filedialog.askopenfilename(title='Choisir un fichier', filetypes=[('TXT', '*.txt')],
-                                                              initialdir='/Users/mr/Desktop/test')
+                                                              initialdir='data')
         if select_file_name != '':
             self.txt_nom.set(select_file_name)
 
