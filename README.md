@@ -1,5 +1,5 @@
 # fluxP - Simulation de flux de piéton
-[![standard-readme compliant](https://img.shields.io/badge/Python-Simulation-green)]()
+[![standard-readme compliant](https://img.shields.io/badge/Python-Simulation-green)](https://github.com/nhhdmr/fluxP)
 
 ## Sommaire
 
