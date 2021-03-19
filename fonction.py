@@ -1,4 +1,3 @@
-import sys
 import re
 import numpy as np
 import math
@@ -43,7 +42,6 @@ def lire_txt(filepath):
                         wall_s = (int(line[2 * i]), int(line[2 * i + 1]))
                         w.append(wall_s)
                     wall.append(w)
-                    # wall.append((int(line[0]), int(line[1])))
                 elif tmp == 3:
                     sortie.append((int(line[0]), int(line[1])))
                 elif tmp == 4:
