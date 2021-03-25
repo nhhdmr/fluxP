@@ -61,7 +61,6 @@ class GUI:
         self.arg_b = DoubleVar()
         self.k = DoubleVar()
         self.dt_time = DoubleVar()
-
     # importer un fichier pour initialiser la simulation
     def upload(self):
         select_file_name = tkinter.filedialog.askopenfilename(title='Choisir un fichier', filetypes=[('TXT', '*.txt')],
@@ -231,7 +230,9 @@ class GUI:
             print("Error: no model or fichier")
         else:
             length_width, wall, sorties, obstacles, incendies, people = fonction.lire_txt(self.txt_nom.get())
-            print(self.txt_nom.get())
+            self.canvas.config(width=GUI.Pic_Ratio*length_width[0],height=GUI.Pic_Ratio*(length_width[1]-1))
+            self.canvas.place(x=350-GUI.Pic_Ratio*length_width[0]/2,y=60)
+
             if self.model.get() == 'AC':
                 self.ini = True
                 self.foule = foule_ca.Foule(people, length_width, wall, sorties, obstacles, incendies)
@@ -241,13 +242,6 @@ class GUI:
                 self.foule.u4 = self.u4.get()
                 self.foule.u5 = self.u5.get()
 
-                print("params:")
-                print(self.foule.u1)
-                print(self.foule.u2)
-                print(self.foule.u3)
-                print(self.foule.u4)
-                print(self.foule.u5)
-
             if self.model.get() == 'MFS':
                 self.ini = True
                 self.foule = foule_sf.Foule(people, length_width, wall, sorties, obstacles, incendies)
@@ -256,14 +250,6 @@ class GUI:
                 self.foule.k = self.k.get()
                 self.foule.delta_time = self.dt_time.get()
 
-                print("params:")
-                print(self.foule.arg_A)
-                print(self.foule.arg_B)
-                print(self.foule.k)
-                print(self.foule.delta_time)
-            #else:
-            #    self.ini = False
-                # self.foule = foule_sf.Foule([], [], [], [], [], [])
             self.set_sortie(self.foule)
             self.set_obstacle(self.foule)
             self.set_incendie(self.foule)
@@ -274,9 +260,6 @@ class GUI:
         if self.ini:
             # calculer le temps de simulation
             #time_start = time.time()
-            #self.set_sortie(self.foule)
-            #self.set_obstacle(self.foule)
-            #self.show_people(self.foule)
 
             # MAJ la visualisation
             i = 0
