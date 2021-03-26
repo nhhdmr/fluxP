@@ -5,7 +5,7 @@ import fonction as fon
 import map
 
 
-# La classe Person
+# La classe Person de MFS
 class Person:
     # la fonction de construction
     def __init__(self, id, x, y):
@@ -24,7 +24,7 @@ class Person:
         return "ID_" + str(self.id)
 
 
-# La classe Foule
+# La classe Foule de MFS
 class Foule:
     # la fonction de construction
     def __init__(self, coords_person, l_w, wall, sorties, obstacles, incendies):
