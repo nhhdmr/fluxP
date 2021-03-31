@@ -26,10 +26,15 @@ Grâce aux résultats de la simulation, certaines caractéristiques de l’évac
 ## Usage
 
 Téléchargez l’intégralité du projet sur l’ordinateur.
+
 Vous devez d’abord installer python 3.6.8 sur votre ordinateur. Ensuite, installez les bibliothèques requises :
-• numpy 1.19.4 : Dans ce projet, il est principalement utilisé pour traiter des données. 
-• seaborn 0.9.0 : Il est utilisé pour créer et enregistrer des données de heat map.
-• matplotlib 3.1.1 : Il est utilisé pour afficher heat map.
+
+- [numpy 1.19.4 : Dans ce projet, il est principalement utilisé pour traiter des données.]
+
+- [seaborn 0.9.0 : Il est utilisé pour créer et enregistrer des données de heat map.] 
+
+- [matplotlib 3.1.1 : Il est utilisé pour afficher heat map.]
+- 
 Dans le dossier du projet, exécutez la fonction principale via la ligne de commande : • python3 main.py
 Ou exécutez le programme via IDE de python et exécutez le programme principal `main.py`
 
