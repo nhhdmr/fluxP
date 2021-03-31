@@ -52,15 +52,25 @@ class GUI:
         self.model = StringVar()
         self.txt_nom = StringVar()
         # les paramètre de AC et MFS
+        # self.u1 = DoubleVar()
         self.u1 = DoubleVar()
+        self.u1.set(10.0)
         self.u2 = DoubleVar()
+        self.u2.set(0.01)
         self.u3 = DoubleVar()
+        self.u3.set(-0.1)
         self.u4 = DoubleVar()
+        self.u4.set(-0.05)
         self.u5 = DoubleVar()
+        self.u5.set(-0.01)
         self.arg_a = DoubleVar()
+        self.arg_a.set(2000.0)
         self.arg_b = DoubleVar()
+        self.arg_b.set(0.08)
         self.k = DoubleVar()
+        self.k.set(120000.0)
         self.dt_time = DoubleVar()
+        self.dt_time.set(0.005)
     # importer un fichier pour initialiser la simulation
     def upload(self):
         select_file_name = tkinter.filedialog.askopenfilename(title='Choisir un fichier', filetypes=[('TXT', '*.txt')],
